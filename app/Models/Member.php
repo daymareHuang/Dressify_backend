@@ -24,6 +24,9 @@ class Member extends Model
         'UID',
         'UserName',
         'Avatar',
+        'UserPWD',
+        'Gender',
+        'UserIntro',
     ];
 
     // 關聯到 Outfit
@@ -37,4 +40,13 @@ class Member extends Model
     // {
     //     return $this->hasManyThrough(Post::class, Outfit::class, 'UID', 'OutfitID', 'UID', 'OutfitID');
     // }
+
+    protected $hidden = [
+        'password',
+    ];
+
+    protected $guarded = [
+        'Email',
+        'UserName',
+    ];
 }
