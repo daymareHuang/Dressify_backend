@@ -79,8 +79,6 @@ Route::post('/userself', [WallController::class, 'userself']);
 
 // 抓粉絲數 沒有table???<?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Models\Item;
 use App\Http\Controllers\OutfitController;
 
