@@ -6,20 +6,42 @@ use Illuminate\Database\Eloquent\Model;
 
 class Outfit extends Model
 {
-    public $timestamps = false; // 取消timestamps
+    protected $table = 'Outfit';
     protected $primaryKey = 'OutfitID';
-    protected $table = 'Outfit'; //定義資料表名稱
-    protected $fillable = ['Title', 'Content', 'Season', 'EditedPhoto','UID']; // 定義資料表欄位
+    public $timestamps = false;
 
-    public function scene (){
+    protected $fillable = ['UID', 'Title', 'Content', 'Season', 'EditedPhoto'];
+
+    // 定義與 Item 的多對多關聯
+    public function items()
+    {
+        return $this->belongsToMany(Item::class, 'TagList', 'OutfitID', 'ItemID');
+    }
+
+    // 定義與 post 的一對多關係
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'OutfitID', 'OutfitID');
+    }
+
+    // 定義多對一關係
+    public function member()
+    {
+        return $this->belongsTo(Member::class, 'UID', 'UID');
+    }
+
+    public function scene()
+    {
         return $this->hasMany(SceneList::class, 'OutfitID', 'OutfitID');
     }
 
-    public function Items(){
-        return $this->belongsToMany(Item::class,'TagList','OutfitID','ItemID');
-    }
+    // public function Items()
+    // {
+    //     return $this->belongsToMany(Item::class, 'TagList', 'OutfitID', 'ItemID');
+    // }
 
-    public function tagInfo(){
-        return $this->hasMany(TagList::class,'OutfitID','OutfitID');
+    public function tagInfo()
+    {
+        return $this->hasMany(TagList::class, 'OutfitID', 'OutfitID');
     }
 }

@@ -20,6 +20,8 @@ class Item extends Model
     {
         return $this->belongsTo(Type::class, 'Type', 'TypeID');
     }
+    
+    // 定義 與 Outfit 的多對多關聯
     public function outfits()
     {   
         return $this->belongsToMany(Outfit::class, 'TagList', 'ItemID', 'OutfitID');
