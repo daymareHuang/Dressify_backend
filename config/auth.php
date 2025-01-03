@@ -36,10 +36,16 @@ return [
     */
 
     'guards' => [
-        'web' => [
+        'api' => [
             'driver' => 'session',
             'provider' => 'users',
-        ],
+        ],  
+    ],
+
+    // 'api' guard will be used in API authentication (we won't need it now)
+    'api' => [
+        'driver' => 'session',
+        'provider' => 'users',
     ],
 
     /*
@@ -62,7 +68,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\Member::class,
         ],
 
         // 'users' => [
