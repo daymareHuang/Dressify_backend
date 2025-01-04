@@ -301,11 +301,25 @@ Route::middleware(['auth'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 });
 
-Route::get('/outfits/photos', function () {
-    $outfits = DB::table('outfit')->select('UID', 'outfitID', 'EditedPhoto')->get();
+// 選擇個人穿搭
+Route::get('/outfits/photos/{UID}', function ($UID) {
+    $outfits = DB::table('outfit')
+        ->select('UID', 'EditedPhoto')
+        ->where('UID', $UID)  //    篩選指定 UID 的照片
+        ->get();
     return response()->json($outfits);
 });
 
+// 取得不符目前登入UID的穿搭
+Route::get('/outfits/photos/exceptFor/{UID}', function ($UID) {
+    $outfits = DB::table('outfit')
+        ->select('UID', 'EditedPhoto') // 選擇需要的欄位
+        ->where('UID', '!=', $UID) // 篩選不包含指定 UID 的照片
+        ->get();
+    return response()->json($outfits);
+});
+
+// 取得member資料
 Route::get('user-info/{uid}', function ($UID) {
     $member = Member::where('uid', $UID)->first();
     if ($member) {
