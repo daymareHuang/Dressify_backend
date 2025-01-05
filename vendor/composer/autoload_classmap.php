@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Http\\Controllers\\AuthController' => $baseDir . '/app/Http/Controllers/AuthController.php',
     'App\\Http\\Controllers\\Auth\\AuthenticatedSessionController' => $baseDir . '/app/Http/Controllers/Auth/AuthenticatedSessionController.php',
     'App\\Http\\Controllers\\Auth\\ConfirmablePasswordController' => $baseDir . '/app/Http/Controllers/Auth/ConfirmablePasswordController.php',
     'App\\Http\\Controllers\\Auth\\EmailVerificationNotificationController' => $baseDir . '/app/Http/Controllers/Auth/EmailVerificationNotificationController.php',
@@ -18,10 +19,16 @@ return array(
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\OutfitController' => $baseDir . '/app/Http/Controllers/OutfitController.php',
     'App\\Http\\Controllers\\ProfileController' => $baseDir . '/app/Http/Controllers/ProfileController.php',
+    'App\\Http\\Controllers\\WallController' => $baseDir . '/app/Http/Controllers/WallController.php',
     'App\\Http\\Requests\\Auth\\LoginRequest' => $baseDir . '/app/Http/Requests/Auth/LoginRequest.php',
     'App\\Http\\Requests\\ProfileUpdateRequest' => $baseDir . '/app/Http/Requests/ProfileUpdateRequest.php',
     'App\\Models\\Item' => $baseDir . '/app/Models/Item.php',
+    'App\\Models\\Member' => $baseDir . '/app/Models/Member.php',
+    'App\\Models\\Outfit' => $baseDir . '/app/Models/Outfit.php',
+    'App\\Models\\Post' => $baseDir . '/app/Models/Post.php',
+    'App\\Models\\SceneList' => $baseDir . '/app/Models/SceneList.php',
     'App\\Models\\Tag' => $baseDir . '/app/Models/Tag.php',
+    'App\\Models\\TagList' => $baseDir . '/app/Models/TagList.php',
     'App\\Models\\Type' => $baseDir . '/app/Models/Type.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
@@ -1569,6 +1576,7 @@ return array(
     'Illuminate\\Database\\Events\\MigrationStarted' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Events/MigrationStarted.php',
     'Illuminate\\Database\\Events\\MigrationsEnded' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Events/MigrationsEnded.php',
     'Illuminate\\Database\\Events\\MigrationsEvent' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Events/MigrationsEvent.php',
+    'Illuminate\\Database\\Events\\MigrationsPruned' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Events/MigrationsPruned.php',
     'Illuminate\\Database\\Events\\MigrationsStarted' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Events/MigrationsStarted.php',
     'Illuminate\\Database\\Events\\ModelPruningFinished' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Events/ModelPruningFinished.php',
     'Illuminate\\Database\\Events\\ModelPruningStarting' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Events/ModelPruningStarting.php',

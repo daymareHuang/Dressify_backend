@@ -16,97 +16,23 @@ use Illuminate\Auth\Events\Validated;
 class OutfitController
 {
     // 新增穿搭資料
-    public function addOutfit(request $request)
-    {
-        $validatedOutfit = $request->validate([
-            'Title' => 'required|string|max:8',
-            'Content' => 'nullable|string|max:100',
-            'UID' => 'required|numeric',
-            'EditedPhoto' => 'nullable|string',
-        ]);
-        //寫入穿搭資料表
-        $outfit = Outfit::create($validatedOutfit);
-
-        // 新增場景
-        $sceneData = $request->validate([
-            'Scene' => 'required|array',
-            'Scene.*' => 'nullable|string|max:5'
-        ]);
-        foreach ($sceneData['Scene'] as $sceneItem) {
-            SceneList::create([
-                'OutfitID' => $outfit['OutfitID'],
-                'Scene' => $sceneItem,
-            ]);
-        }
-
-        $tagList = $request->input('Tag');
-
-        // 新增標籤（衣櫃單品）
-        $tagItemList = array_filter($tagList, fn($tag) => $tag['inCloset'] === 1);
-        foreach ($tagItemList as $tagItem) {
-            // 驗證資料
-            $validator = Validator::make($tagItem, [
-                'itemID' => 'nullable|numeric',
-                'x' => 'nullable',
-                'y' => 'nullable'
-            ]);
-
-            // 拋出錯誤
-            if ($validator->fails()) {
-                $errors = $validator->errors();
-                return response()->json(['errors' => $errors], 422);
-            }
-
-            $tagItem = TagList::create([
-                'OutfitID' => $outfit['OutfitID'],
-                'ItemID' => $validator->validated()['itemID'],
-                'X' => $validator->validated()['x'],
-                'Y' => $validator->validated()['y'],
-            ]);
-        }
-
-        // 新增標籤（註解）
-        $tagCommentList = array_filter($tagList, fn($tag) => $tag['inCloset'] == 0);
-        foreach ($tagCommentList as $tagItem) {
-
-            $validator = Validator::make($tagItem, [
-                'content' => 'required',
-                'type' => 'nullable',
-                'comment' => 'nullable',
-                'size' => 'nullable',
-                'brand' => 'nullable',
-            ]);
-
-            if ($validator->fails()) {
-                $errors = $validator->errors();
-                return response()->json(['errors' => $errors], 422);
-            }
-
-            Tag::create([
-                'OutfitID' => $outfit['OutfitID'],
-                'Title' => $validator->validated()['content'],
-                'Type' => $validator->validated()['type'],
-                'Comment' => $validator->validated()['comment'],
-                'Size' => $validator->validated()['size'],
-                'Brand' => $validator->validated()['brand'],
-            ]);
-        }
-
-        // return response()->json(['message'=>'已寫入穿搭資料','outfitData'=>$outfit, 'tagData'=>$tag, 'sceneList'=>$senseListData],201);
-        return response()->json(['info' => ''], 201);
-    }
-
     public function createOutfit(request $request)
     {
 
+
+        // 驗證穿搭資訊
         $validatedOutfit = $request->validate([
             'Title' => 'required|string|max:8',
             'Content' => 'nullable|string|max:100',
             'Season' => 'nullable|string|max:10',
             'UID' => 'required|numeric|max:300',
             'EditedPhoto' => 'required|string',
+            'filter' => 'required',
         ]);
 
+        // return response(['test' => $validatedOutfit], 200);
+
+        // 驗證場景資訊
         $validatedScene = $request->validate([
             'Scene' => 'nullable',
             'Scene.*' => 'nullable|string|max:10'
@@ -116,8 +42,6 @@ class OutfitController
         $tagComments = array_filter($tagList, fn($tag) => $tag['inCloset'] == 0);
         $tagItems = array_filter($tagList, fn($tag) => $tag['inCloset'] == 1);
 
-
-
         // 新增穿搭主表
         $outfit = Outfit::create([
             'Title' => $validatedOutfit['Title'],
@@ -125,27 +49,60 @@ class OutfitController
             'Season' => $validatedOutfit['Season'],
             'EditedPhoto' => $validatedOutfit['EditedPhoto'],
             'UID' => 1,
+            'FilterStyle' => $validatedOutfit['filter']
         ]);
 
         // 新增場景
         foreach ($validatedScene['Scene'] as $sceneName) {
-            $outfit->scene()->create([
-                'Scene' => $sceneName,
-            ]);
+            SceneList::create(
+                [
+                    'OutfitID' => $outfit['OutfitID'],
+                    'SceneName' => $sceneName
+                ]
+            );
         }
 
         // 新增標籤（單品）
         foreach ($tagItems as $element) {
-            $outfit->Items()->attach([
-                $element['itemID'] => [
-                    'X' => $element['x'],
-                    'Y' => $element['y'],
-                ]
+            TagList::create([
+                'OutfitID' => $outfit['OutfitID'],
+                'ItemID' => $element['itemID'],
+                'X' => $element['x'],
+                'Y' => $element['y'],
             ]);
         }
 
-        foreach($tagComments as $element){
-            
+        // 新增標籤（註解）
+        foreach ($tagComments as $element) {
+
+            // 驗證每一個元素
+            $validator = Validator::make($element, [
+                'content' => 'required',
+                'type' => 'nullable',
+                'comment' => 'nullable',
+                'size' => 'nullable',
+                'brand' => 'nullable',
+                'x' => 'nullable|numeric',
+                'y' => 'nullable|numeric',
+            ]);
+
+            // 驗證失敗拋出訊息
+            if ($validator->fails()) {
+                $errors = $validator->errors();
+                return response()->json(['errors' => $errors], 422);
+            }
+
+            // 寫入資料庫
+            Tag::create([
+                'OutfitID' => $outfit['OutfitID'],
+                'Title' => $validator->validated()['content'],
+                'Type' => $validator->validated()['type'],
+                'Comment' => $validator->validated()['comment'],
+                'Size' => $validator->validated()['size'],
+                'Brand' => $validator->validated()['brand'],
+                'X' => $validator->validated()['x'],
+                'Y' => $validator->validated()['y']
+            ]);
         }
 
         return response(['data' => $tagItems], 200);
@@ -154,7 +111,7 @@ class OutfitController
     // 查詢穿搭
     public function showOutfit($outfitID)
     {
-        $outfit = Outfit::with(['scene', 'Items', 'tagInfo'])->find($outfitID);
+        $outfit = Outfit::with(['scene', 'Items', 'tagInfo', 'tagComment'])->find($outfitID);
 
         if (!$outfit) {
             return response()->json(['message' => '找不到搭配'], 403);
@@ -185,7 +142,7 @@ class OutfitController
             foreach ($request->input('Scene') as $sceneName) {
                 SceneList::create([
                     'OutfitID' => $outfitID,
-                    'Scene' => $sceneName
+                    'SceneName' => $sceneName
                 ]);
             }
         }

@@ -249,6 +249,7 @@ Route::get('/item/{ItemID}/recomms', function ($ItemID) {
 });
 
 
+// ====================我是分隔線======================
 // 田
 use App\Http\Controllers\OutfitController;
 Route::get('/closetType', [OutfitController::class, 'searchTypeItem']);
@@ -275,6 +276,8 @@ Route::patch('/ClosetMatch/{outfitID}',[OutfitController::class,'updateOutfit'])
 Route::delete('/ClosetMatch/{outfitID}',[OutfitController::class,'deleteOutfit']);
 
 
+
+// ====================我是分隔線======================
 use App\Models\Member;
 use App\Http\Controllers\AuthController;
 
