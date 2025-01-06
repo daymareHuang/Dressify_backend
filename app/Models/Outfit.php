@@ -10,7 +10,7 @@ class Outfit extends Model
     protected $primaryKey = 'OutfitID';
     public $timestamps = false;
 
-    protected $fillable = ['UID', 'Title', 'Content', 'Season', 'EditedPhoto'];
+    protected $fillable = ['UID', 'Title', 'Content', 'Season', 'EditedPhoto','FilterStyle'];
 
     // 定義與 Item 的多對多關聯
     public function items()
@@ -35,13 +35,14 @@ class Outfit extends Model
         return $this->hasMany(SceneList::class, 'OutfitID', 'OutfitID');
     }
 
-    // public function Items()
-    // {
-    //     return $this->belongsToMany(Item::class, 'TagList', 'OutfitID', 'ItemID');
-    // }
 
     public function tagInfo()
     {
         return $this->hasMany(TagList::class, 'OutfitID', 'OutfitID');
+    }
+
+    // 定義與 Tag 的一對多關係
+    public function tagComment(){
+        return $this->hasMany(Tag::class,'OutfitID','OutfitID');
     }
 }
