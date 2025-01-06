@@ -58,6 +58,9 @@ Route::get('/brand', [WallController::class, 'brand']);
 // 抓衣服類別
 Route::get('/clothestype', [WallController::class, 'clothestype']);
 
+// 搜尋衣服ID
+Route::post('/getClothesTypeID', [WallController::class, 'getClothesTypeID']);
+
 
 // 使用者個人頁面
 // 抓使用者post
@@ -198,6 +201,9 @@ Route::get('/item/{ItemID}/outfits', function ($ItemID) {
     return response()->json($relatedOutfits);
 });
 
+
+// ====================我是分隔線======================
+
 use App\Models\Post;
 use App\Models\TagList;
 // 單品有哪些相似的穿搭可以在dresswall被看到
@@ -274,6 +280,7 @@ Route::patch('/ClosetMatch/{outfitID}',[OutfitController::class,'updateOutfit'])
 // 刪除穿搭資訊
 Route::delete('/ClosetMatch/{outfitID}',[OutfitController::class,'deleteOutfit']);
 
+// ====================我是分隔線======================
 
 use App\Models\Member;
 use App\Http\Controllers\AuthController;

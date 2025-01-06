@@ -131,9 +131,15 @@ class WallController extends Controller
                                         AND item.Title like ?) as result
                                         group by PostID;",[$clothesType, $clothesType, $brand, $brand, $size, $size, $season, $season, $color ]);
         return $result;                                
-        
+    }
 
+    // 純條件搜尋
 
+    //衣服
+    public function getClothesTypeID(Request $request){
+        $clothesType = $request->clothesType;
+        $result = DB::select("SELECT TypeID FROM `type` WHERE Name=?",[$clothesType]);
+        return $result;
     }
 
     // 抓衣服品牌
@@ -149,12 +155,12 @@ class WallController extends Controller
     // 抓衣服類別
     public function clothestype()
     {
-        $fiveclothes = DB::select('select Name from item
+        $sixclothes = DB::select('select Name from item
                                 left join type on type.TypeID=item.Type
                                 group by Name
                                 order by count(Name) DESC
                                 limit 6;');
-        return $fiveclothes;
+        return $sixclothes;
     }
 
 
