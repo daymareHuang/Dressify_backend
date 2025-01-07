@@ -36,14 +36,6 @@ class WallController extends Controller
             ->header('charset', 'utf-8');
     }
 
-    // 能夠知道這個貼文是不是已經被當前的使用者按讚過
-    public function checkLike(Request $request){
-        $UID = $request->UID;
-        $PostID = $request->PostID;
-        $check = DB::select('SELECT count(*) as UserLike FROM `liketable` WHERE UID=? && PostID=?',[$UID, $PostID]);
-        return $check;
-    }
-
 
     // 能夠 能夠當使用者收藏的時候 傳給我們他所蒐藏的貼文ID(???)
 // 以及我們必須自己去找當時登入的人是誰 他的ID(???)
@@ -74,13 +66,14 @@ class WallController extends Controller
     public function getmenpost(Request $request)
     {
         $UID = $request->UID;
-        $fivePosts = DB::select('select post.PostID, UserName, Avatar, EditedPhoto, userlike.UID from post 
+        $fivePosts = DB::select('select post.PostID, UserName, Avatar, EditedPhoto, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
                                         left join outfit on outfit.OutfitID=post.OutfitID
                                         left join member on outfit.UID=member.UID
                                         left join (select * from liketable where UID = ?) as userlike on userlike.PostID = post.PostID
+                                        left join (select * from collecttable where UID = ?) as userkeep on userkeep.PostID = post.PostID
                                         where member.Gender=1
                                         order by post.PostID DESC
-                                        limit 5;',[$UID]);
+                                        limit 5;',[$UID, $UID]);
 
         return $fivePosts;
     }
@@ -89,13 +82,14 @@ class WallController extends Controller
     public function getwomenpost(Request $request)
     {
         $UID = $request->UID;
-        $fivePosts = DB::select('select post.PostID, UserName, Avatar, EditedPhoto, userlike.UID from post 
+        $fivePosts = DB::select('select post.PostID, UserName, Avatar, EditedPhoto, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
                                         left join outfit on outfit.OutfitID=post.OutfitID
                                         left join member on outfit.UID=member.UID
                                         left join (select * from liketable where UID = ?) as userlike on userlike.PostID = post.PostID
+                                        left join (select * from collecttable where UID = ?) as userkeep on userkeep.PostID = post.PostID
                                         where member.Gender=0
                                         order by post.PostID DESC
-                                        limit 5;',[$UID]);
+                                        limit 5;',[$UID, $UID]);
         return $fivePosts;
     }
 

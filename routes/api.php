@@ -31,9 +31,6 @@ Route::post('/like', [WallController::class, 'like']);
 // 能夠取消當時登入的人他所按讚貼文的讚
 Route::post('/unlike', [WallController::class, 'unlike']);
 
-// 確認載入的時候當前使用者有沒有對這個貼文按讚
-Route::post('/checklike',[WallController::class, 'checkLike']);
-
 // 能夠 能夠當使用者收藏的時候 傳給我們他所蒐藏的貼文ID(???)
 // 以及我們必須自己去找當時登入的人是誰 他的ID(???)
 Route::post('/collect', [WallController::class, 'collect']);
