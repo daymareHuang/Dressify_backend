@@ -31,6 +31,9 @@ Route::post('/like', [WallController::class, 'like']);
 // 能夠取消當時登入的人他所按讚貼文的讚
 Route::post('/unlike', [WallController::class, 'unlike']);
 
+// 確認載入的時候當前使用者有沒有對這個貼文按讚
+Route::post('/checklike',[WallController::class, 'checkLike']);
+
 // 能夠 能夠當使用者收藏的時候 傳給我們他所蒐藏的貼文ID(???)
 // 以及我們必須自己去找當時登入的人是誰 他的ID(???)
 Route::post('/collect', [WallController::class, 'collect']);
@@ -40,10 +43,10 @@ Route::post('/uncollect', [WallController::class, 'uncollect']);
 
 
 // 能夠取得 (__、依時間最晚發?)的五則貼文
-Route::get('/getmenpost', [WallController::class, 'getmenpost']);
+Route::post('/getmenpost', [WallController::class, 'getmenpost']);
 
 // 拿女人的時間最晚的五則po文
-Route::get('/getwomenpost', [WallController::class, 'getwomenpost']);
+Route::post('/getwomenpost', [WallController::class, 'getwomenpost']);
 
 // 搜尋頁面
 // 搜尋

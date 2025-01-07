@@ -10,7 +10,7 @@ use Illuminate\support\Facades\DB;
 class WallController extends Controller
 {
 
-// 穿搭強的頁面
+    // 穿搭強的頁面
 // 這個api 是能夠當使用者按讚的時候 傳給我們他所按讚的貼文ID(???)
 // 以及我們必須自己去找當時登入的人是誰 他的ID(???)
     public function like(Request $request)
@@ -24,7 +24,7 @@ class WallController extends Controller
             ->header('charset', 'utf-8');
     }
 
-// 能夠取消當時登入的人他所按讚貼文的讚
+    // 能夠取消當時登入的人他所按讚貼文的讚
     public function unlike(Request $request)
     {
         $UID = $request->UID;
@@ -34,6 +34,14 @@ class WallController extends Controller
         return response('{"liked":false}')
             ->header('content-type', 'application/json')
             ->header('charset', 'utf-8');
+    }
+
+    // 能夠知道這個貼文是不是已經被當前的使用者按讚過
+    public function checkLike(Request $request){
+        $UID = $request->UID;
+        $PostID = $request->PostID;
+        $check = DB::select('SELECT count(*) as UserLike FROM `liketable` WHERE UID=? && PostID=?',[$UID, $PostID]);
+        return $check;
     }
 
 
@@ -63,27 +71,31 @@ class WallController extends Controller
     }
 
     // 能夠取得 (__、依時間最晚發?)的五則貼文
-    public function getmenpost()
+    public function getmenpost(Request $request)
     {
-        $fivePosts = DB::select('select PostID, UserName, Avatar, EditedPhoto from post 
-                                    left join outfit on outfit.OutfitID=post.OutfitID
-	                                left join member on outfit.UID=member.UID
-                                    where member.Gender=1
-                                    order by post.PostID DESC
-                                    limit 5;');
+        $UID = $request->UID;
+        $fivePosts = DB::select('select post.PostID, UserName, Avatar, EditedPhoto, userlike.UID from post 
+                                        left join outfit on outfit.OutfitID=post.OutfitID
+                                        left join member on outfit.UID=member.UID
+                                        left join (select * from liketable where UID = ?) as userlike on userlike.PostID = post.PostID
+                                        where member.Gender=1
+                                        order by post.PostID DESC
+                                        limit 5;',[$UID]);
 
         return $fivePosts;
     }
 
     // 拿女人的時間最晚的五則po文
-    public function getwomenpost()
+    public function getwomenpost(Request $request)
     {
-        $fivePosts = DB::select('select PostID, UserName, Avatar, EditedPhoto from post 
+        $UID = $request->UID;
+        $fivePosts = DB::select('select post.PostID, UserName, Avatar, EditedPhoto, userlike.UID from post 
                                         left join outfit on outfit.OutfitID=post.OutfitID
                                         left join member on outfit.UID=member.UID
+                                        left join (select * from liketable where UID = ?) as userlike on userlike.PostID = post.PostID
                                         where member.Gender=0
                                         order by post.PostID DESC
-                                        limit 5;');
+                                        limit 5;',[$UID]);
         return $fivePosts;
     }
 
@@ -112,10 +124,11 @@ class WallController extends Controller
     public function complicatedsearch(Request $request)
     {
         $clothesType = $request->clothesType;
-        $color ='%' . $request->color . '%';;
+        $color = '%' . $request->color . '%';
+        ;
         $brand = $request->brand;
         $size = $request->size;
-        $season =$request->season;
+        $season = $request->season;
 
         // 這個地方顏色另外建欄位??
         $result = DB::select("select EditedPhoto, Avatar, UserName from(
@@ -129,16 +142,17 @@ class WallController extends Controller
                                         AND (? = 'default' or item.Size = ? ) 
                                         AND (? = 'default' or outfit.Season = ? ) 
                                         AND item.Title like ?) as result
-                                        group by PostID;",[$clothesType, $clothesType, $brand, $brand, $size, $size, $season, $season, $color ]);
-        return $result;                                
+                                        group by PostID;", [$clothesType, $clothesType, $brand, $brand, $size, $size, $season, $season, $color]);
+        return $result;
     }
 
     // 純條件搜尋
 
     //衣服
-    public function getClothesTypeID(Request $request){
+    public function getClothesTypeID(Request $request)
+    {
         $clothesType = $request->clothesType;
-        $result = DB::select("SELECT TypeID FROM `type` WHERE Name=?",[$clothesType]);
+        $result = DB::select("SELECT TypeID FROM `type` WHERE Name=?", [$clothesType]);
         return $result;
     }
 
