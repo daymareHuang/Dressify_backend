@@ -48,7 +48,7 @@ class OutfitController
             'Content' => $validatedOutfit['Content'],
             'Season' => $validatedOutfit['Season'],
             'EditedPhoto' => $validatedOutfit['EditedPhoto'],
-            'UID' => 1,
+            'UID' => $validatedOutfit['UID'],
             'FilterStyle' => $validatedOutfit['filter']
         ]);
 
@@ -118,6 +118,17 @@ class OutfitController
         }
         return response()->json($outfit, 200);
     }
+
+    // 取得使用者衣櫃單品
+    public function showItems($UID)
+    {
+        $results = Item::join('Type', 'Item.Type', '=', 'Type.TypeID')
+            ->where('UID',$UID)
+            ->select('Title', 'Size', 'Brand', 'EditedPhoto', 'Name', 'PartID', 'ItemID')
+            ->get();
+        return response()->json($results);
+    }
+
 
     // 更新穿搭
     public function updateOutfit(Request $request, $outfitID)

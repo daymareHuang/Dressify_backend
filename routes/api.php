@@ -121,7 +121,6 @@ use App\Http\Controllers\OutfitController;
 Route::get('/closetType', [OutfitController::class, 'searchTypeItem']);
 
 // 新增穿搭
-// Route::post('/OutfitDescription', [OutfitController::class, 'addOutfit']);
 Route::post('/OutfitDescription', [OutfitController::class, 'createOutfit']);
 
 // 撈單品資料
@@ -131,6 +130,9 @@ Route::get('/closet', function () {
         ->get();
     return response()->json($results);
 });
+
+// 取得使用者衣櫃單品
+Route::get('closet/{UID}',[OutfitController::class,'showItems']);
 
 // 查詢穿搭資訊
 Route::get('/ClosetMatch/{outfitID}', [OutfitController::class, 'showOutfit']);
