@@ -66,14 +66,14 @@ class WallController extends Controller
     public function getmenpost(Request $request)
     {
         $UID = $request->UID;
-        $fivePosts = DB::select('select post.PostID, UserName, Avatar, EditedPhoto, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
+        $fivePosts = DB::select('select outfit.UID as AuthorID, post.PostID, UserName, Avatar, EditedPhoto, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
                                         left join outfit on outfit.OutfitID=post.OutfitID
                                         left join member on outfit.UID=member.UID
                                         left join (select * from liketable where UID = ?) as userlike on userlike.PostID = post.PostID
                                         left join (select * from collecttable where UID = ?) as userkeep on userkeep.PostID = post.PostID
                                         where member.Gender=1
                                         order by post.PostID DESC
-                                        limit 5;',[$UID, $UID]);
+                                        limit 5;', [$UID, $UID]);
 
         return $fivePosts;
     }
@@ -82,14 +82,14 @@ class WallController extends Controller
     public function getwomenpost(Request $request)
     {
         $UID = $request->UID;
-        $fivePosts = DB::select('select post.PostID, UserName, Avatar, EditedPhoto, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
+        $fivePosts = DB::select('select outfit.UID as AuthorID, post.PostID, UserName, Avatar, EditedPhoto, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
                                         left join outfit on outfit.OutfitID=post.OutfitID
                                         left join member on outfit.UID=member.UID
                                         left join (select * from liketable where UID = ?) as userlike on userlike.PostID = post.PostID
                                         left join (select * from collecttable where UID = ?) as userkeep on userkeep.PostID = post.PostID
                                         where member.Gender=0
                                         order by post.PostID DESC
-                                        limit 5;',[$UID, $UID]);
+                                        limit 5;', [$UID, $UID]);
         return $fivePosts;
     }
 
@@ -213,9 +213,18 @@ class WallController extends Controller
     public function userself(Request $request)
     {
         $UID = $request->UID;
-        $info = DB::select('select UID, UserName, Avatar from member
+        $info = DB::select('select UserName, Avatar from member
                                 where UID=?;', [$UID]);
 
+        return $info;
+    }
+
+
+    // 放在其他人頁面的資訊
+    public function otherppl(Request $request)
+    {
+        $UID = $request->UID;
+        $info = DB::select('SELECT UserName, Avatar, UserIntro FROM member WHERE UID = ?', [$UID]);
         return $info;
     }
 

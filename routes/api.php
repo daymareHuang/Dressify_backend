@@ -78,9 +78,7 @@ Route::post('/getpostnum', [WallController::class, 'getpostnum']);
 // 要放在selfpage裡面
 Route::post('/userself', [WallController::class, 'userself']);
 
-
-
-// 抓粉絲數 沒有table???
+Route::post('/otherppl',[WallController::class, 'otherppl']);
 
 
 
