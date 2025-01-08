@@ -72,14 +72,24 @@ Route::post('/getusercollect', [WallController::class, 'getusercollect']);
 // 抓貼文數
 Route::post('/getpostnum', [WallController::class, 'getpostnum']);
 
+//抓粉絲數
+Route::post('/getfannum',[WallController::class, 'follownum']);
 
 // userinfo 的所有api
 // 能夠抓取user 所有的資料 利用上面的api去做
 // 要放在selfpage裡面
 Route::post('/userself', [WallController::class, 'userself']);
 
+// 抓其他使用者的資訊
 Route::post('/otherppl',[WallController::class, 'otherppl']);
 
+// 讓使用者可以追蹤
+Route::post('/follow',[WallController::class, 'follow']);
+
+// 讓使用者可以退追蹤
+Route::post('/unfollow',[WallController::class, 'unfollow']);
+
+Route::post('/checkfollow',[WallController::class, 'followcheck']);
 
 
 // ====================我是分隔線======================

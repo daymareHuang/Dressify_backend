@@ -215,8 +215,13 @@ class WallController extends Controller
         $UID = $request->UID;
         $info = DB::select('select UserName, Avatar from member
                                 where UID=?;', [$UID]);
-
         return $info;
+    }
+
+    public function follownum(Request $request){
+        $UID = $request->UID;
+        $fanNumber = DB::select('select count(*) as FanNumber from followtable where FollowedUID=?  ',[$UID]);
+        return $fanNumber;
     }
 
 
@@ -227,5 +232,26 @@ class WallController extends Controller
         $info = DB::select('SELECT UserName, Avatar, UserIntro FROM member WHERE UID = ?', [$UID]);
         return $info;
     }
+
+    public function follow(Request $request){
+        $authorID = $request->authorID;
+        $UID = $request->UID;
+        DB::insert('insert into followtable (FollowedUID,FollowerUID) VALUES (?,?)',[$authorID, $UID]);
+    }
+
+    public function unfollow(Request $request){
+        $authorID = $request->authorID;
+        $UID = $request->UID;
+        DB::delete('delete from followtable where FollowedUID = ? and FollowerUID = ?',[$authorID, $UID]);
+    }
+
+    public function followcheck(Request $request){
+        $authorID = $request->authorID;
+        $UID = $request->UID;
+        $result = DB::select('select count(*) as FollowCheck from followtable where FollowedUID = ? and FollowerUID = ?',[$authorID, $UID]);
+        return $result;
+    }
+
+
 
 }
