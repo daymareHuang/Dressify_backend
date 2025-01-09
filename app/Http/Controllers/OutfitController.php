@@ -185,11 +185,5 @@ class OutfitController
         return response()->json(['message' => 'Outfit 已成功刪除'], 200);
     }
 
-    // 查詢穿搭
-    public function findOutfit(Request $request){
-        $title = $request->title;
-        $UID = $request->UID;
-        $outfitID = DB::select('select OutFitID from outfit where Title= ? and UID = ? ORDER BY OutfitID desc limit 1;',[$title, $UID]);
-        return $outfitID;
-    }
+   
 }
