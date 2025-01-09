@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\support\Facades\DB;
 
 
 use Illuminate\Http\Request;
@@ -18,7 +19,6 @@ class OutfitController
     // 新增穿搭資料
     public function createOutfit(request $request)
     {
-
 
         // 驗證穿搭資訊
         $validatedOutfit = $request->validate([
@@ -183,5 +183,13 @@ class OutfitController
         $outfitData->delete();
 
         return response()->json(['message' => 'Outfit 已成功刪除'], 200);
+    }
+
+    // 查詢穿搭
+    public function findOutfit(Request $request){
+        $title = $request->title;
+        $UID = $request->UID;
+        $outfitID = DB::select('select OutFitID from outfit where Title= ? and UID = ? ORDER BY OutfitID desc limit 1;',[$title, $UID]);
+        return $outfitID;
     }
 }

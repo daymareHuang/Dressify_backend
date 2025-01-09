@@ -253,5 +253,9 @@ class WallController extends Controller
     }
 
 
-
+    // 發文
+    public function postPost(Request $request){
+        $OutfitID = $request->OutfitID;
+        DB::insert('insert into post (OutfitID) values (?)',[$OutfitID]);
+    }
 }

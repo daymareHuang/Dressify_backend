@@ -153,6 +153,12 @@ Route::patch('/ClosetMatch/{outfitID}', [OutfitController::class, 'updateOutfit'
 // 刪除穿搭資訊
 Route::delete('/ClosetMatch/{outfitID}', [OutfitController::class, 'deleteOutfit']);
 
+// 發文
+Route::post('/PostPost',[WallController::class, 'postPost']);
+
+// 找尋貼文
+Route::post('/findOutfit',[OutfitController::class, 'findOutfit']);
+
 // ====================我是分隔線======================
 
 
