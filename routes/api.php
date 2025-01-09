@@ -156,8 +156,6 @@ Route::delete('/ClosetMatch/{outfitID}', [OutfitController::class, 'deleteOutfit
 // 發文
 Route::post('/PostPost',[WallController::class, 'postPost']);
 
-// 找尋貼文
-Route::post('/findOutfit',[OutfitController::class, 'findOutfit']);
 
 // ====================我是分隔線======================
 

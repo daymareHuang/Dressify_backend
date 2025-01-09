@@ -105,7 +105,7 @@ class OutfitController
             ]);
         }
 
-        return response(['data' => $tagItems], 200);
+        return response()->json($outfit['OutfitID'], 200);
     }
 
     // 查詢穿搭
