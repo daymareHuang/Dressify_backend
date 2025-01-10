@@ -118,8 +118,7 @@ class WallController extends Controller
     public function complicatedsearch(Request $request)
     {
         $clothesType = $request->clothesType;
-        $color = '%' . $request->color . '%';
-        ;
+        $color = '%' . $request->color . '%'; 
         $brand = $request->brand;
         $size = $request->size;
         $season = $request->season;
