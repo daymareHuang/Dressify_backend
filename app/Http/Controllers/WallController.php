@@ -66,7 +66,7 @@ class WallController extends Controller
     public function getmenpost(Request $request)
     {
         $UID = $request->UID;
-        $fivePosts = DB::select('select outfit.UID as AuthorID, post.PostID, UserName, Avatar, EditedPhoto, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
+        $fivePosts = DB::select('select outfit.UID as AuthorID, post.PostID, UserName, Avatar, EditedPhoto, FilterStyle, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
                                         left join outfit on outfit.OutfitID=post.OutfitID
                                         left join member on outfit.UID=member.UID
                                         left join (select * from liketable where UID = ?) as userlike on userlike.PostID = post.PostID
@@ -82,7 +82,7 @@ class WallController extends Controller
     public function getwomenpost(Request $request)
     {
         $UID = $request->UID;
-        $fivePosts = DB::select('select outfit.UID as AuthorID, post.PostID, UserName, Avatar, EditedPhoto, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
+        $fivePosts = DB::select('select outfit.UID as AuthorID, post.PostID, UserName, Avatar, EditedPhoto, FilterStyle, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
                                         left join outfit on outfit.OutfitID=post.OutfitID
                                         left join member on outfit.UID=member.UID
                                         left join (select * from liketable where UID = ?) as userlike on userlike.PostID = post.PostID
@@ -104,7 +104,7 @@ class WallController extends Controller
         $keyword = '%' . htmlentities($validated['keyword'], ENT_QUOTES | ENT_HTML5) . '%';
 
         $result = DB::select("select EditedPhoto, Avatar, UserName from(
-                                    select post.PostID,outfit.EditedPhoto, member.Avatar, member.UserName from post
+                                    select post.PostID,outfit.EditedPhoto, FilterStyle, member.Avatar, member.UserName from post
                                     left join outfit on outfit.OutfitID = post.OutfitID
                                     left join taglist on taglist.OutfitID = outfit.OutfitID
                                     left join item on item.ItemID = taglist.ItemID
@@ -126,7 +126,7 @@ class WallController extends Controller
 
         // 這個地方顏色另外建欄位??
         $result = DB::select("select EditedPhoto, Avatar, UserName from(
-                                        select post.PostID,outfit.EditedPhoto, member.Avatar, member.UserName from post
+                                        select post.PostID,outfit.EditedPhoto, FilterStyle, member.Avatar, member.UserName from post
                                         left join outfit on outfit.OutfitID = post.OutfitID
                                         left join taglist on taglist.OutfitID = outfit.OutfitID
                                         left join item on item.ItemID = taglist.ItemID
@@ -177,7 +177,7 @@ class WallController extends Controller
     public function getuserpost(Request $request)
     {
         $UID = $request->UID;
-        $post = DB::select('select EditedPhoto FROM Post
+        $post = DB::select('select EditedPhoto, FilterStyle FROM Post
                                 left join outfit on outfit.OutfitID = post.OutfitID
                                 where UID=?
                                 order by PostID DESC;', [$UID]);
@@ -188,7 +188,7 @@ class WallController extends Controller
     public function getusercollect(Request $request)
     {
         $UID = $request->UID;
-        $post = DB::select('select EditedPhoto FROM collecttable
+        $post = DB::select('select EditedPhoto, FilterStyle FROM collecttable
                                 left join post on post.PostID = collecttable.PostID
                                 left join outfit on outfit.OutfitID =post.OutfitID
                                 where collecttable.UID=?
