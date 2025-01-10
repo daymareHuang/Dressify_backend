@@ -17,7 +17,7 @@ class WallController extends Controller
     {
         $UID = $request->UID;
         $PostID = $request->PostID;
-        DB::insert('insert into liketable (UID, PostID) values (?,?)', [$UID, $PostID]);
+        DB::insert('insert into LikeTable (UID, PostID) values (?,?)', [$UID, $PostID]);
         // 或許可以不用return
         return response('{"liked": true}')
             ->header('content-type', 'application/json')
@@ -29,7 +29,7 @@ class WallController extends Controller
     {
         $UID = $request->UID;
         $PostID = $request->PostID;
-        DB::delete('delete from liketable where UID=? AND PostID=?', [$UID, $PostID]);
+        DB::delete('delete from LikeTable where UID=? AND PostID=?', [$UID, $PostID]);
         // 還是再次說明 或許不用return 或許可以拿來做測試
         return response('{"liked":false}')
             ->header('content-type', 'application/json')
@@ -43,7 +43,7 @@ class WallController extends Controller
     {
         $UID = $request->UID;
         $PostID = $request->PostID;
-        DB::insert('insert into collecttable (UID, PostID) values (?,?)', [$UID, $PostID]);
+        DB::insert('insert into CollectTable (UID, PostID) values (?,?)', [$UID, $PostID]);
         // 或許可以不用return
         return response('{"collected": true}')
             ->header('content-type', 'application/json')
@@ -55,7 +55,7 @@ class WallController extends Controller
     {
         $UID = $request->UID;
         $PostID = $request->PostID;
-        DB::delete('delete from collecttable where UID=? AND PostID=?', [$UID, $PostID]);
+        DB::delete('delete from CollectTable where UID=? AND PostID=?', [$UID, $PostID]);
         // 還是再次說明 或許不用return 或許可以拿來做測試
         return response('{"collected":false}')
             ->header('content-type', 'application/json')
@@ -66,13 +66,13 @@ class WallController extends Controller
     public function getmenpost(Request $request)
     {
         $UID = $request->UID;
-        $fivePosts = DB::select('select outfit.UID as AuthorID, post.PostID, UserName, Avatar, EditedPhoto, FilterStyle, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
-                                        left join outfit on outfit.OutfitID=post.OutfitID
-                                        left join member on outfit.UID=member.UID
-                                        left join (select * from liketable where UID = ?) as userlike on userlike.PostID = post.PostID
-                                        left join (select * from collecttable where UID = ?) as userkeep on userkeep.PostID = post.PostID
-                                        where member.Gender=1
-                                        order by post.PostID DESC
+        $fivePosts = DB::select('select Outfit.UID as AuthorID, Post.PostID, UserName, Avatar, EditedPhoto, FilterStyle, Userlike.UID as UserLike, Userkeep.UID as UserKeep from Post 
+                                        left join Outfit on Outfit.OutfitID = Post.OutfitID
+                                        left join Member on Outfit.UID = Member.UID
+                                        left join (select * from LikeTable where UID = ?) as Userlike on Userlike.PostID = Post.PostID
+                                        left join (select * from CollectTable where UID = ?) as Userkeep on Userkeep.PostID = Post.PostID
+                                        where Member.Gender=1
+                                        order by Post.PostID DESC
                                         limit 5;', [$UID, $UID]);
 
         return $fivePosts;
@@ -82,13 +82,13 @@ class WallController extends Controller
     public function getwomenpost(Request $request)
     {
         $UID = $request->UID;
-        $fivePosts = DB::select('select outfit.UID as AuthorID, post.PostID, UserName, Avatar, EditedPhoto, FilterStyle, userlike.UID as UserLike, userkeep.UID as UserKeep from post 
-                                        left join outfit on outfit.OutfitID=post.OutfitID
-                                        left join member on outfit.UID=member.UID
-                                        left join (select * from liketable where UID = ?) as userlike on userlike.PostID = post.PostID
-                                        left join (select * from collecttable where UID = ?) as userkeep on userkeep.PostID = post.PostID
-                                        where member.Gender=0
-                                        order by post.PostID DESC
+        $fivePosts = DB::select('select Outfit.UID as AuthorID, Post.PostID, UserName, Avatar, EditedPhoto, FilterStyle, Userlike.UID as UserLike, Userkeep.UID as UserKeep from Post 
+                                        left join Outfit on Outfit.OutfitID=Post.OutfitID
+                                        left join Member on Outfit.UID=Member.UID
+                                        left join (select * from LikeTable where UID = ?) as Userlike on Userlike.PostID = Post.PostID
+                                        left join (select * from CollectTable where UID = ?) as Userkeep on Userkeep.PostID = Post.PostID
+                                        where Member.Gender=0
+                                        order by Post.PostID DESC
                                         limit 5;', [$UID, $UID]);
         return $fivePosts;
     }
@@ -104,12 +104,12 @@ class WallController extends Controller
         $keyword = '%' . htmlentities($validated['keyword'], ENT_QUOTES | ENT_HTML5) . '%';
 
         $result = DB::select("select EditedPhoto, Avatar, UserName from(
-                                    select post.PostID,outfit.EditedPhoto, FilterStyle, member.Avatar, member.UserName from post
-                                    left join outfit on outfit.OutfitID = post.OutfitID
-                                    left join taglist on taglist.OutfitID = outfit.OutfitID
-                                    left join item on item.ItemID = taglist.ItemID
-                                    left join member on member.UID = outfit.UID
-                                    where item.Title like ? or outfit.Title like ?) as result
+                                    select Post.PostID, Outfit.EditedPhoto, FilterStyle, Member.Avatar, Member.UserName from Post
+                                    left join Outfit on Outfit.OutfitID = Post.OutfitID
+                                    left join TagList on TagList.OutfitID = Outfit.OutfitID
+                                    left join Item on Item.ItemID = TagList.ItemID
+                                    left join Member on Member.UID = Outfit.UID
+                                    where Item.Title like ? or Outfit.Title like ?) as result
                                     group by PostID;", [$keyword, $keyword]);
         return $result;
     }
@@ -125,16 +125,16 @@ class WallController extends Controller
 
         // 這個地方顏色另外建欄位??
         $result = DB::select("select EditedPhoto, Avatar, UserName from(
-                                        select post.PostID,outfit.EditedPhoto, FilterStyle, member.Avatar, member.UserName from post
-                                        left join outfit on outfit.OutfitID = post.OutfitID
-                                        left join taglist on taglist.OutfitID = outfit.OutfitID
-                                        left join item on item.ItemID = taglist.ItemID
-                                        left join member on member.UID = outfit.UID
-                                        where ( ? = 'default' or item.Type = ? ) 
-                                        AND (? = 'default' or item.Brand = ? )
-                                        AND (? = 'default' or item.Size = ? ) 
-                                        AND (? = 'default' or outfit.Season = ? ) 
-                                        AND item.Title like ?) as result
+                                        select Post.PostID, Outfit.EditedPhoto, FilterStyle, Member.Avatar, Member.UserName from Post
+                                        left join Outfit on Outfit.OutfitID = Post.OutfitID
+                                        left join TagList on TagList.OutfitID = Outfit.OutfitID
+                                        left join Item on Item.ItemID = TagList.ItemID
+                                        left join Member on Member.UID = Outfit.UID
+                                        where ( ? = 'default' or Item.Type = ? ) 
+                                        AND (? = 'default' or Item.Brand = ? )
+                                        AND (? = 'default' or Item.Size = ? ) 
+                                        AND (? = 'default' or Outfit.Season = ? ) 
+                                        AND Item.Title like ?) as result
                                         group by PostID;", [$clothesType, $clothesType, $brand, $brand, $size, $size, $season, $season, $color]);
         return $result;
     }
@@ -145,14 +145,14 @@ class WallController extends Controller
     public function getClothesTypeID(Request $request)
     {
         $clothesType = $request->clothesType;
-        $result = DB::select("SELECT TypeID FROM `type` WHERE Name=?", [$clothesType]);
+        $result = DB::select("SELECT TypeID FROM Type WHERE Name=?", [$clothesType]);
         return $result;
     }
 
     // 抓衣服品牌
     public function brand()
     {
-        $fiveBrand = DB::select('Select Brand FROM item
+        $fiveBrand = DB::select('Select Brand FROM Item
                                     group by Brand
                                     ORDER BY count(Brand) DESC
                                     limit 6;');
@@ -162,8 +162,8 @@ class WallController extends Controller
     // 抓衣服類別
     public function clothestype()
     {
-        $sixclothes = DB::select('select Name from item
-                                left join type on type.TypeID=item.Type
+        $sixclothes = DB::select('select Name from Item
+                                left join Type on Type.TypeID = Item.Type
                                 group by Name
                                 order by count(Name) DESC
                                 limit 6;');
@@ -177,7 +177,7 @@ class WallController extends Controller
     {
         $UID = $request->UID;
         $post = DB::select('select EditedPhoto, FilterStyle FROM Post
-                                left join outfit on outfit.OutfitID = post.OutfitID
+                                left join Outfit on Outfit.OutfitID = Post.OutfitID
                                 where UID=?
                                 order by PostID DESC;', [$UID]);
         return $post;
@@ -187,11 +187,11 @@ class WallController extends Controller
     public function getusercollect(Request $request)
     {
         $UID = $request->UID;
-        $post = DB::select('select EditedPhoto, FilterStyle FROM collecttable
-                                left join post on post.PostID = collecttable.PostID
-                                left join outfit on outfit.OutfitID =post.OutfitID
-                                where collecttable.UID=?
-                                order by collecttable.PostID DESC;', [$UID]);
+        $post = DB::select('select EditedPhoto, FilterStyle FROM CollectTable
+                                left join Post on Post.PostID = CollectTable.PostID
+                                left join Outfit on Outfit.OutfitID = Post.OutfitID
+                                where CollectTable.UID=?
+                                order by CollectTable.PostID DESC;', [$UID]);
         return $post;
     }
 
@@ -200,8 +200,8 @@ class WallController extends Controller
     public function getpostnum(Request $request)
     {
         $UID = $request->UID;
-        $postNum = DB::select('select count(postID) as postNum from post
-                                left join outfit ON outfit.outfitID=post.outfitID
+        $postNum = DB::select('select count(PostID) as postNum from Post
+                                left join Outfit ON Outfit.OutfitID=Post.OutfitID
                                 where UID=?;', [$UID]);
         return $postNum;
     }
@@ -212,14 +212,15 @@ class WallController extends Controller
     public function userself(Request $request)
     {
         $UID = $request->UID;
-        $info = DB::select('select UserName, Avatar from member
+        $info = DB::select('select UserName, Avatar from Member
                                 where UID=?;', [$UID]);
         return $info;
     }
 
+    // 獲取粉絲數
     public function follownum(Request $request){
         $UID = $request->UID;
-        $fanNumber = DB::select('select count(*) as FanNumber from followtable where FollowedUID=?  ',[$UID]);
+        $fanNumber = DB::select('select count(*) as FanNumber from FollowTable where FollowedUID=?  ',[$UID]);
         return $fanNumber;
     }
 
@@ -228,26 +229,29 @@ class WallController extends Controller
     public function otherppl(Request $request)
     {
         $UID = $request->UID;
-        $info = DB::select('SELECT UserName, Avatar, UserIntro FROM member WHERE UID = ?', [$UID]);
+        $info = DB::select('SELECT UserName, Avatar, UserIntro FROM Member WHERE UID = ?', [$UID]);
         return $info;
     }
 
+    // 追蹤
     public function follow(Request $request){
         $authorID = $request->authorID;
         $UID = $request->UID;
-        DB::insert('insert into followtable (FollowedUID,FollowerUID) VALUES (?,?)',[$authorID, $UID]);
+        DB::insert('insert into FollowTable (FollowedUID, FollowerUID) VALUES (?,?)',[$authorID, $UID]);
     }
 
+    // 退追蹤
     public function unfollow(Request $request){
         $authorID = $request->authorID;
         $UID = $request->UID;
-        DB::delete('delete from followtable where FollowedUID = ? and FollowerUID = ?',[$authorID, $UID]);
+        DB::delete('delete from FollowTable where FollowedUID = ? and FollowerUID = ?',[$authorID, $UID]);
     }
 
+    // 有沒有誰追蹤誰
     public function followcheck(Request $request){
         $authorID = $request->authorID;
         $UID = $request->UID;
-        $result = DB::select('select count(*) as FollowCheck from followtable where FollowedUID = ? and FollowerUID = ?',[$authorID, $UID]);
+        $result = DB::select('select count(*) as FollowCheck from FollowTable where FollowedUID = ? and FollowerUID = ?',[$authorID, $UID]);
         return $result;
     }
 
@@ -255,6 +259,6 @@ class WallController extends Controller
     // 發文
     public function postPost(Request $request){
         $OutfitID = $request->OutfitID;
-        DB::insert('insert into post (OutfitID) values (?)',[$OutfitID]);
+        DB::insert('insert into Post (OutfitID) values (?)',[$OutfitID]);
     }
 }
