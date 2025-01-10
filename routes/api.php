@@ -219,3 +219,27 @@ Route::get('user-info/{uid}', function ($UID) {
         return response()->json(['message' => 'No user data found'], 404);
     }
 });
+
+// 處理頭像上傳
+Route::post('/update-avatar/{UID}', function (Request $request, $UID) {
+    // 獲取前端頭像資料
+    $avatar = $request->input('avatar');
+
+    if ($avatar) {
+        // 更新指定 UID 的會員頭像
+        $updated = DB::table('member')
+            ->where('UID', $UID)
+            ->update(['avatar' => $avatar]);
+
+        if ($updated) {
+            // 更新成功時，同步寫入資料庫及刷新頁面
+            // return redirect()->back()->with('success', '头像更新成功');
+            $member = DB::table('member')->where('UID', $UID)->first();
+            return response()->json([
+                'success' => true,
+                'message' => '头像更新成功',
+                'data' => $member
+            ]);
+        }
+    }
+});
