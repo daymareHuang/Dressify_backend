@@ -12,6 +12,7 @@ use App\Models\Tag;
 use App\Models\TagList;
 use App\Models\SceneList;
 use App\Models\Outfit;
+use App\Models\Post;
 use Illuminate\Auth\Events\Validated;
 
 class OutfitController
@@ -123,7 +124,7 @@ class OutfitController
     public function showItems($UID)
     {
         $results = Item::join('Type', 'Item.Type', '=', 'Type.TypeID')
-            ->where('UID',$UID)
+            ->where('UID', $UID)
             ->select('Title', 'Size', 'Brand', 'EditedPhoto', 'Name', 'PartID', 'ItemID')
             ->get();
         return response()->json($results);
@@ -166,8 +167,9 @@ class OutfitController
     {
         // 刪除標籤資料
         Tag::where('OutfitID', $outfitID)->delete();
-
+        
         $outfitData = Outfit::find($outfitID);
+        
 
         if (!$outfitData) {
             return response()->json(['message' => '沒有找到資料'], 404);
@@ -180,10 +182,11 @@ class OutfitController
         $outfitData->scene()->delete();
         $outfitData->tagInfo()->delete();
 
+        // 刪除穿搭牆資料
+        Post::where('OutfitID', $outfitID)->delete();
+        
         $outfitData->delete();
 
         return response()->json(['message' => 'Outfit 已成功刪除'], 200);
     }
-
-   
 }
